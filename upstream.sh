@@ -29,26 +29,27 @@ function print_error() {
   echo -e "${ERROR} ${RedBG} $1 ${Font}"
 }
 
-function update_sh(){
-  ol_version=$(curl -L -s https://cdn.statically.io/gh/INTEL-2333/ | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
+function update_sh() {
+  local ol_version=$(curl -L -s https://cdn.statically.io/gh/INTEL-2333/ | grep -oP 'shell_version=\K[^"]+')
   if [[ "$shell_version" != "$(echo -e "$shell_version\n$ol_version" | sort -rV | head -1)" ]]; then
-    print_ok "存在新版本，是否更新 [Y/N]?"
-    read -r update_confirm
-    case $update_confirm in
-    [yY][eE][sS] | [yY])
-      wget -N --no-check-certificate https://testingcf.jsdelivr.net/gh/INTEL-2333/AGHelper/upstream.sh
-      print_ok "更新完成"
-      print_ok "您可以通过 bash $0 执行本程序"
-      exit 0
-      ;;
-    *) 
-      ;;
+    print_ok "存在新版本，是否更新 [Y/N]? "
+    read -r  update_confirm
+    case "${update_confirm,,}" in
+      yes|y)
+        wget -N --no-check-certificate https://testingcf.jsdelivr.net/gh/INTEL-2333/AGHelper/upstream.sh
+        print_ok "更新完成"
+        print_ok "您可以通过 bash $0 执行本程序"
+        exit 0
+        ;;
+      *)
+        ;;
     esac
   else
     print_ok "当前版本为最新版本"
     print_ok "您可以通过 bash $0 执行本程序"
   fi
 }
+
 
 function automated_AGH() {
   source '/etc/os-release'
