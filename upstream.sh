@@ -135,20 +135,24 @@ function service_AGH(){
   print_ok "命令[$service_option]已执行"
 }
 
-function update_yaml(){
-  read -rp "请输入AdGuardHome.yaml路径[默认:/opt/AdGuardHome/AdGuardHome.yaml]:" yaml_path
-  [ -z "$yaml_path" ] && yaml_path="/opt/AdGuardHome/AdGuardHome.yaml"
+
+
+function update_yaml() {
+  read -rp "请输入AdGuardHome.yaml路径[默认:/opt/AdGuardHome/AdGuardHome.yaml]: " yaml_path
+  yaml_path=${yaml_path:-/opt/AdGuardHome/AdGuardHome.yaml}
   if [[ "${upstream_status}" == "enable" ]]; then
-    read -rp "请输入分流文件路径[默认:/opt/AdGuardHome/upstream.txt]:" upstream_path
-    [ -z "$upstream_path" ] && upstream_path="/opt/AdGuardHome/upstream.txt"
-    sed -i "/upstream_dns_file:/c\  upstream_dns_file: $upstream_path" $yaml_path
+    read -rp "请输入分流文件路径[默认:/opt/AdGuardHome/upstream.txt]: " upstream_path
+    upstream_path=${upstream_path:-/opt/AdGuardHome/upstream.txt}
+    sed -i "/upstream_dns_file:/c\  upstream_dns_file: $upstream_path" "$yaml_path" && service AdGuardHome restart
   else
-    sed -i "/upstream_dns_file:/c\  upstream_dns_file: \"\"" $yaml_path
+    sed -i "/upstream_dns_file:/c\  upstream_dns_file: \"\"" "$yaml_path" && service AdGuardHome restart
   fi
   print_ok "配置文件[$yaml_path]已修改"
   sleep 2s
   menu
 }
+
+
 
 function update_crontab(){
   if [[ "${crontab_status}" == "enable" ]]; then
@@ -183,6 +187,8 @@ function update_crontab(){
   menu
 }
 
+
+
 function disable_fiewall(){
   systemctl stop firewalld
   systemctl disable firewalld
@@ -191,6 +197,8 @@ function disable_fiewall(){
   systemctl stop ufw
   systemctl disable ufw
 }
+
+
 
 menu() {
   clear
