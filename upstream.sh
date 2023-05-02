@@ -30,7 +30,7 @@ function print_error() {
 }
 
 function update_sh() {
-  local ol_version=$(curl -L -s https://cdn.statically.io/gh/INTEL-2333/ | grep -oP 'shell_version=\K[^"]+')
+  local ol_version=$(curl -L -s https://testingcf.jsdelivr.net/gh/INTEL-2333/AGHelper/upstream.sh | grep -oP 'shell_version=\K[^"]+')
   if [[ "$shell_version" != "$(echo -e "$shell_version\n$ol_version" | sort -rV | head -1)" ]]; then
     print_ok "存在新版本，是否更新 [Y/N]? "
     read -r  update_confirm
