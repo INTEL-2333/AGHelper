@@ -159,36 +159,29 @@ function update_yaml() {
 function update_crontab(){
   if [[ "${crontab_status}" == "enable" ]]; then
     read -rp "请输入生成路径[默认:/opt/AdGuardHome/upstream.txt]:" upstream_path
-    [ -z "$upstream_path" ] && upstream_path="/opt/AdGuardHome/upstream.txt"
-    echo -e "#!/usr/bin/env bash\n> $upstream_path" > /etc/update4AGH.sh
-    read -rp "请输入境内DNS数量[默认:1]:" Num1
-    [ -z "$Num1" ] && Num1="1"
-    for ((i=1; i<=Num1; i++))
-    do
-      read -rp "请输入境内DNS$i[默认:tls://223.5.5.5]:" DNS
-      [ -z "$DNS" ] && DNS="tls://223.5.5.5"
-      echo -e "curl -s 'https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/direct-list.txt' | sed '/regexp:/d' | sed 's/full://g' | tr "\n" "/" | sed -e 's|^|/|' -e 's|\(.*\)|[\1]$DNS|' >> $upstream_path" >> /etc/update4AGH.sh
+    upstream_path=${upstream_path:-"/opt/AdGuardHome/upstream.txt"}
+    echo "#!/usr/bin/env bash" > /etc/update4AGH.sh
+    echo "> $upstream_path" >> /etc/update4AGH.sh
+    read -rp "请输入境内DNS数量[默认:1]:" num1
+    num1=${num1:-1}
+    for ((i=1; i<=num1; i++)); do
+      read -rp "请输入境内DNS$i[默认:tls://223.5.5.5]:" dns
+      dns=${dns:-"tls://223.5.5.5"}
+      echo "curl -s 'https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/direct-list.txt' | sed '/regexp:/d' | sed 's/full://g' | tr \"\\n\" \"/\" | sed -e 's|^|/|' -e 's|\\(.*\\)|[\\1]$dns\n|' >> $upstream_path" >> /etc/update4AGH.sh
     done
-    read -rp "请输入境外DNS数量[默认:1]:" Num2
-    [ -z "$Num2" ] && Num2="1"
-    for ((i=1; i<=Num2; i++))
-    do
-      read -rp "请输入境外DNS$i[默认:tls://8.8.8.8]:" DNS
-      [ -z "$DNS" ] && DNS="tls://8.8.8.8"
-      echo -e "$DNS >> $upstream_path" >> /etc/update4AGH.sh
+    read -rp "请输入境外DNS数量[默认:1]:" num2
+    num2=${num2:-1}
+    for ((i=1; i<=num2; i++)); do
+      read -rp "请输入境外DNS$i[默认:tls://8.8.8.8]:" dns
+      dns=${dns:-"tls://8.8.8.8"}
+      echo "echo $dns >> $upstream_path" >> /etc/update4AGH.sh
     done
-    echo '
-    if [[ -x "$(command -v systemctl)" ]]; then
-      systemctl restart AdGuardHome
-    else
-      service AdGuardHome restart
-    fi
-    ' >> /etc/update4AGH.sh
+    echo -e 'if command -v systemctl >/dev/null; then\n  systemctl restart AdGuardHome\nelse\n  service AdGuardHome restart\nfi' >> /etc/update4AGH.sh
     echo "0 0 * * 0 bash /etc/update4AGH.sh" >> /etc/crontab
     chmod +x /etc/update4AGH.sh
   else
     sed -i '/update4AGH.sh/d' /etc/crontab
-    rm /etc/update4AGH.sh
+    rm -f /etc/update4AGH.sh
   fi
   if [[ -x "$(command -v systemctl)" ]]; then
     systemctl reload crond.service || systemctl reload cron.service
@@ -199,6 +192,7 @@ function update_crontab(){
   sleep 2s
   menu
 }
+
 
 
 
