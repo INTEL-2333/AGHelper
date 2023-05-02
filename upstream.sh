@@ -128,11 +128,13 @@ function create_upstream() {
   menu
 }
 
-
-
-function service_AGH(){
-  service AdGuardHome $service_option
-  print_ok "命令[$service_option]已执行"
+function systemctl_AGH(){
+  if [[ -x "$(command -v systemctl)" ]]; then
+    systemctl $systemctl_option AdGuardHome
+  else
+    service AdGuardHome $systemctl_option
+  fi
+  print_ok "命令[$systemctl_option]已执行"
 }
 
 
@@ -143,9 +145,9 @@ function update_yaml() {
   if [[ "${upstream_status}" == "enable" ]]; then
     read -rp "请输入分流文件路径[默认:/opt/AdGuardHome/upstream.txt]: " upstream_path
     upstream_path=${upstream_path:-/opt/AdGuardHome/upstream.txt}
-    sed -i "/upstream_dns_file:/c\  upstream_dns_file: $upstream_path" "$yaml_path" && service AdGuardHome restart
+    sed -i "/upstream_dns_file:/c\  upstream_dns_file: $upstream_path" "$yaml_path" && systemctl_option=stop&&systemctl_AGH
   else
-    sed -i "/upstream_dns_file:/c\  upstream_dns_file: \"\"" "$yaml_path" && service AdGuardHome restart
+    sed -i "/upstream_dns_file:/c\  upstream_dns_file: \"\"" "$yaml_path" && systemctl_option=stop&&systemctl_AGH
   fi
   print_ok "配置文件[$yaml_path]已修改"
   sleep 2s
@@ -175,6 +177,13 @@ function update_crontab(){
       [ -z "$DNS" ] && DNS="tls://8.8.8.8"
       echo -e "$DNS >> $upstream_path" >> /etc/update4AGH.sh
     done
+    echo '
+    if [[ -x "$(command -v systemctl)" ]]; then
+      systemctl restart AdGuardHome
+    else
+      service AdGuardHome restart
+    fi
+    ' >> /etc/update4AGH.sh
     echo "0 0 * * 0 bash /etc/update4AGH.sh" >> /etc/crontab
     chmod +x /etc/update4AGH.sh
   else
@@ -258,20 +267,20 @@ menu() {
     update_crontab
     ;;
   21)
-    service_option=status
-    service_AGH
+    systemctl_option=status
+    systemctl_AGH
     ;;
   22)
-    service_option=start
-    service_AGH
+    systemctl_option=start
+    systemctl_AGH
     ;;
   23)
-    service_option=stop
-    service_AGH
+    systemctl_option=stop
+    systemctl_AGH
     ;;
   24)
-    service_option=restart
-    service_AGH
+    systemctl_option=restart
+    systemctl_AGH
     ;;
   25)
     disable_fiewall
