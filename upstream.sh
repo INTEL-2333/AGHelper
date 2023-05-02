@@ -196,7 +196,7 @@ function update_crontab(){
 
 
 
-function disable_fiewall(){
+function disable_firewall(){
   systemctl stop firewalld
   systemctl disable firewalld
   systemctl stop nftables
@@ -209,7 +209,7 @@ function disable_fiewall(){
 
 menu() {
   clear
-  echo && echo -e "
+  echo -e "
     AdGuard分流助手 安装管理脚本 ${Red}[${shell_version}]${Font}
     ---Authored by INTEL-2333---
     https://github.com/INTEL-2333/AGHelper/
@@ -232,65 +232,24 @@ menu() {
   ${Green}25.${Font} 关闭 防火墙(不建议)
   ${Green}99.${Font} 退出 脚本
   --------------------------------------"
-  read -rp "请输入数字:" menu_num
+
+  read -rp "请输入数字 [0-99]: " menu_num
+
   case $menu_num in
-  0)
-    update_sh
-    ;;
-  1)
-    automated_option=-v
-    automated_AGH
-    ;;
-  2)
-    automated_option=-u
-    automated_AGH
-    ;;
-  11)
-    create_upstream
-    ;;
-  12)
-    upstream_status=enable
-    update_yaml
-    ;;
-  13)
-    upstream_status=disable
-    update_yaml
-    ;;
-  14)
-    crontab_status=enable
-    update_crontab
-    ;;
-  15)
-    crontab_status=remove
-    update_crontab
-    ;;
-  21)
-    systemctl_option=status
-    systemctl_AGH
-    ;;
-  22)
-    systemctl_option=start
-    systemctl_AGH
-    ;;
-  23)
-    systemctl_option=stop
-    systemctl_AGH
-    ;;
-  24)
-    systemctl_option=restart
-    systemctl_AGH
-    ;;
-  25)
-    disable_fiewall
-    ;;
-  99)
-    exit 1
-    ;;
-  *)
-    print_error "请输入正确数字 [0-99]"
-    sleep 2s
-    menu
-    ;;
+    0) update_sh ;;
+    1) automated_AGH -v ;;
+    2) automated_AGH -u ;;
+    11) create_upstream ;;
+    12) update_yaml --upstream-status enable ;;
+    13) update_yaml --upstream-status disable ;;
+    14) update_crontab --crontab-status enable ;;
+    15) update_crontab --crontab-status remove ;;
+    21) systemctl_AGH --systemctl-option status ;;
+    22) systemctl_AGH --systemctl-option start ;;
+    23) systemctl_AGH --systemctl-option stop ;;
+    24) systemctl_AGH --systemctl-option restart ;;
+    25) disable_firewall ;;
+    99) exit 1 ;;
+    *) echo "请输入正确数字 [0-99]" && sleep 2s && menu ;;
   esac
 }
-menu "$@"
