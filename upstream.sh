@@ -149,6 +149,7 @@ function update_crontab(){
       echo -e "$DNS >> $upstream_path" >> /etc/update4AGH.sh
     done
     echo "0 0 * * 0 bash /etc/update4AGH.sh" >> /etc/crontab
+    chmod +x /etc/update4AGH.sh
   else
     sed -i '/update4AGH.sh/d' /etc/crontab
     rm /etc/update4AGH.sh
