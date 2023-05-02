@@ -145,9 +145,9 @@ function update_yaml() {
   if [[ "${upstream_status}" == "enable" ]]; then
     read -rp "请输入分流文件路径[默认:/opt/AdGuardHome/upstream.txt]: " upstream_path
     upstream_path=${upstream_path:-/opt/AdGuardHome/upstream.txt}
-    sed -i "/upstream_dns_file:/c\  upstream_dns_file: $upstream_path" "$yaml_path" && systemctl_option=stop&&systemctl_AGH
+    sed -i "/upstream_dns_file:/c\  upstream_dns_file: $upstream_path" "$yaml_path" && systemctl_option=restart&&systemctl_AGH
   else
-    sed -i "/upstream_dns_file:/c\  upstream_dns_file: \"\"" "$yaml_path" && systemctl_option=stop&&systemctl_AGH
+    sed -i "/upstream_dns_file:/c\  upstream_dns_file: \"\"" "$yaml_path" && systemctl_option=restart&&systemctl_AGH
   fi
   print_ok "配置文件[$yaml_path]已修改"
   sleep 2s
