@@ -22,6 +22,6 @@ wget -N --no-check-certificate -q -O install.sh "https://testingcf.jsdelivr.net/
 ```
 ## Thanks
 
-* Github Copilot:https://github.com/features/copilot
+* Github Copilot: https://github.com/features/copilot
 
 Enjoy!
