@@ -56,11 +56,11 @@ function automated_AGH() {
   if [[ "${ID}" == "centos" && ${VERSION_ID} -ge 7 ]]; then
     print_ok "当前系统为 Centos ${VERSION_ID} ${VERSION}"
     yum install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- $automated_option
+    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
   elif [[ "${ID}" == "ol" ]]; then
     print_ok "当前系统为 Oracle Linux ${VERSION_ID} ${VERSION}"
     yum install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- $automated_option
+    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
   elif [[ "${ID}" == "openwrt" ]]; then
     print_ok "当前系统为 OpenWRT ${VERSION_ID} ${VERSION}"
     if [[ "${automated_option}" == "-v" ]]; then
@@ -71,11 +71,11 @@ function automated_AGH() {
   elif [[ "${ID}" == "debian" && ${VERSION_ID} -ge 9 ]]; then
     print_ok "当前系统为 Debian ${VERSION_ID} ${VERSION}"
     apt install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- $automated_option
+    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
   elif [[ "${ID}" == "ubuntu" && $(echo "${VERSION_ID}" | cut -d '.' -f1) -ge 18 ]]; then
     print_ok "当前系统为 Ubuntu ${VERSION_ID} ${UBUNTU_CODENAME}"
     apt install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- $automated_option
+    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
   else
     print_error "当前系统为 ${ID} ${VERSION_ID} 不在支持的系统列表内"
     exit 1
