@@ -30,7 +30,7 @@ function print_error() {
 }
 
 function update_sh() {
-  local ol_version=$(curl -L -s https://testingcf.jsdelivr.net/gh/INTEL-2333/AGHelper/upstream.sh | grep -oP 'shell_version=\K[^"]+')
+  local ol_version=$(curl -L -s https://cdn.statically.io/gh/INTEL-2333/ | grep -oP 'shell_version=\K[^"]+')
   if [[ "$shell_version" != "$(echo -e "$shell_version\n$ol_version" | sort -rV | head -1)" ]]; then
     print_ok "存在新版本，是否更新 [Y/N]? "
     read -r  update_confirm
@@ -51,36 +51,60 @@ function update_sh() {
 }
 
 
+
 function automated_AGH() {
   source '/etc/os-release'
-  if [[ "${ID}" == "centos" && ${VERSION_ID} -ge 7 ]]; then
-    print_ok "当前系统为 Centos ${VERSION_ID} ${VERSION}"
-    yum install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
-  elif [[ "${ID}" == "ol" ]]; then
-    print_ok "当前系统为 Oracle Linux ${VERSION_ID} ${VERSION}"
-    yum install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
-  elif [[ "${ID}" == "openwrt" ]]; then
-    print_ok "当前系统为 OpenWRT ${VERSION_ID} ${VERSION}"
-    if [[ "${automated_option}" == "-v" ]]; then
-      opkg install https://endpoint.fastgit.org/https://github.com/rufengsuixing/luci-app-adguardhome/releases/download/1.8-9/luci-app-adguardhome_1.8-9_all.ipk
-    else
-      opkg remove luci-app-adguardhome -autoremove
-    fi
-  elif [[ "${ID}" == "debian" && ${VERSION_ID} -ge 9 ]]; then
-    print_ok "当前系统为 Debian ${VERSION_ID} ${VERSION}"
-    apt install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
-  elif [[ "${ID}" == "ubuntu" && $(echo "${VERSION_ID}" | cut -d '.' -f1) -ge 18 ]]; then
-    print_ok "当前系统为 Ubuntu ${VERSION_ID} ${UBUNTU_CODENAME}"
-    apt install -y curl
-    curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option
-  else
-    print_error "当前系统为 ${ID} ${VERSION_ID} 不在支持的系统列表内"
-    exit 1
-  fi
+
+  local curl_command="curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option"
+
+  case "$ID" in
+    centos)
+      if (( VERSION_ID >= 7 )); then
+        print_ok "当前系统为 Centos ${VERSION_ID} ${VERSION}"
+        yum install -y curl
+        eval "$curl_command"
+      fi
+      ;;
+
+    ol)
+      print_ok "当前系统为 Oracle Linux ${VERSION_ID} ${VERSION}"
+      yum install -y curl
+      eval "$curl_command"
+      ;;
+
+    openwrt)
+      print_ok "当前系统为 OpenWRT ${VERSION_ID} ${VERSION}"
+      if [[ "$automated_option" == "-v" ]]; then
+        opkg install https://endpoint.fastgit.org/https://github.com/rufengsuixing/luci-app-adguardhome/releases/download/1.8-9/luci-app-adguardhome_1.8-9_all.ipk
+      else
+        opkg remove luci-app-adguardhome -autoremove
+      fi
+      ;;
+
+    debian)
+      if (( VERSION_ID >= 9 )); then
+        print_ok "当前系统为 Debian ${VERSION_ID} ${VERSION}"
+        apt install -y curl
+        eval "$curl_command"
+      fi
+      ;;
+
+    ubuntu)
+      if (( VERSION_ID >= 18 )); then
+        print_ok "当前系统为 Ubuntu ${VERSION_ID} ${UBUNTU_CODENAME}"
+        apt install -y curl
+        eval "$curl_command"
+      fi
+      ;;
+
+    *)
+      print_error "当前系统为 ${ID} ${VERSION_ID} 不在支持的系统列表内"
+      exit 1
+      ;;
+  esac
 }
+
+
 
 function create_upstream(){
   read -rp "请输入生成路径[默认:/opt/AdGuardHome/upstream.txt]:" upstream_path
