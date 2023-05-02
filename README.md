@@ -23,5 +23,6 @@ wget -N --no-check-certificate -q -O install.sh "https://testingcf.jsdelivr.net/
 ## Thanks
 
 * Github Copilot: https://github.com/features/copilot
+* AdGuardHome: https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration#upstreams-for-domains
 
 Enjoy!
