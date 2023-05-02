@@ -195,7 +195,6 @@ function update_crontab(){
 
 
 
-
 function disable_firewall(){
   systemctl stop firewalld
   systemctl disable firewalld
@@ -209,7 +208,7 @@ function disable_firewall(){
 
 menu() {
   clear
-  echo && echo -e "
+  echo -e "
   AdGuard分流助手 安装管理脚本 ${Red}[${shell_version}]${Font}
   ---Authored by INTEL-2333---
   https://github.com/INTEL-2333/AGHelper/
@@ -232,9 +231,7 @@ menu() {
   ${Green}25.${Font} 关闭 防火墙(不建议)
   ${Green}99.${Font} 退出 脚本
   --------------------------------------"
-
   read -rp "请输入数字:" menu_num
-
   case $menu_num in
     0)
       update_sh
@@ -273,7 +270,7 @@ menu() {
       systemctl_option=restart systemctl_AGH
       ;;
     25)
-      disable_fiewall
+      disable_firewall
       ;;
     99)
       exit 1
@@ -285,6 +282,5 @@ menu() {
       ;;
   esac
 }
-
 
 menu "$@"
