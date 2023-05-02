@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-#====================================================
+#=================================================================
 #	System Request:Debian 9+/Ubuntu 18.04+/Centos 7+/OpenWrt R18.06+
 #	Author:	INTEL-2333
 #	Dscription: AdGuardHome Helper
 #	Github: https://github.com/INTEL-2333/AGHelper/
-#====================================================
+#=================================================================
 
 # Font color
 Green="\033[32m"
@@ -30,7 +30,7 @@ function print_error() {
 }
 
 function update_sh() {
-  local ol_version=$(curl -L -s https://cdn.statically.io/gh/INTEL-2333/ | grep -oP 'shell_version=\K[^"]+')
+  local ol_version=$(curl -L -s https://testingcf.jsdelivr.net/gh/INTEL-2333/AGHelper/upstream.sh | grep -oP 'shell_version=\K[^"]+')
   if [[ "$shell_version" != "$(echo -e "$shell_version\n$ol_version" | sort -rV | head -1)" ]]; then
     print_ok "存在新版本，是否更新 [Y/N]? "
     read -r  update_confirm
@@ -190,7 +190,11 @@ function update_crontab(){
     sed -i '/update4AGH.sh/d' /etc/crontab
     rm /etc/update4AGH.sh
   fi
-  service cron reload || service crond reload
+  if [[ -x "$(command -v systemctl)" ]]; then
+    systemctl reload crond.service || systemctl reload cron.service
+  else
+    service cron reload || service crond reload
+  fi
   print_ok "定时任务已设置为[$crontab_status]"
   sleep 2s
   menu
