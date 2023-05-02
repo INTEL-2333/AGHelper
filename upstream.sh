@@ -54,9 +54,7 @@ function update_sh() {
 
 function automated_AGH() {
   source '/etc/os-release'
-
   local curl_command="curl -s -S -L https://testingcf.jsdelivr.net/gh/AdguardTeam/AdGuardHome/scripts/install.sh | sh -s -- $automated_option"
-
   case "$ID" in
     centos)
       if (( VERSION_ID >= 7 )); then
@@ -65,13 +63,11 @@ function automated_AGH() {
         eval "$curl_command"
       fi
       ;;
-
     ol)
       print_ok "当前系统为 Oracle Linux ${VERSION_ID} ${VERSION}"
       yum install -y curl
       eval "$curl_command"
       ;;
-
     openwrt)
       print_ok "当前系统为 OpenWRT ${VERSION_ID} ${VERSION}"
       if [[ "$automated_option" == "-v" ]]; then
@@ -80,7 +76,6 @@ function automated_AGH() {
         opkg remove luci-app-adguardhome -autoremove
       fi
       ;;
-
     debian)
       if (( VERSION_ID >= 9 )); then
         print_ok "当前系统为 Debian ${VERSION_ID} ${VERSION}"
@@ -88,7 +83,6 @@ function automated_AGH() {
         eval "$curl_command"
       fi
       ;;
-
     ubuntu)
       if (( VERSION_ID >= 18 )); then
         print_ok "当前系统为 Ubuntu ${VERSION_ID} ${UBUNTU_CODENAME}"
@@ -96,7 +90,6 @@ function automated_AGH() {
         eval "$curl_command"
       fi
       ;;
-
     *)
       print_error "当前系统为 ${ID} ${VERSION_ID} 不在支持的系统列表内"
       exit 1
@@ -106,31 +99,36 @@ function automated_AGH() {
 
 
 
-function create_upstream(){
-  read -rp "请输入生成路径[默认:/opt/AdGuardHome/upstream.txt]:" upstream_path
-  [ -z "$upstream_path" ] && upstream_path="/opt/AdGuardHome/upstream.txt"
-  read -rp "请输入境内DNS数量[默认:1]:" Num1
-  [ -z "$Num1" ] && Num1="1"
-  > $upstream_path
-  for ((i=1; i<=Num1; i++))
-  do
-    read -rp "请输入境内DNS$i[默认:tls://223.5.5.5]:" DNS
-    [ -z "$DNS" ] && DNS="tls://223.5.5.5"
-    curl -s 'https://endpoint.fastgit.org/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/direct-list.txt' | sed '/regexp:/d' | sed 's/full://g' | tr "\n" "/" | sed -e 's|^|/|' -e 's|\(.*\)|[\1]'${DNS}'|' >> $upstream_path
-    echo -n -e "\n" >> $upstream_path
+function create_upstream() {
+  read -rp "请输入生成路径[默认:/opt/AdGuardHome/upstream.txt]: " upstream_path
+  upstream_path=${upstream_path:-/opt/AdGuardHome/upstream.txt}
+  read -rp "请输入境内DNS数量[默认:1]: " num1
+  num1=${num1:-1}
+  > "$upstream_path"
+  for ((i = 1; i <= num1; i++)); do
+    read -rp "请输入境内DNS$i[默认:tls://223.5.5.5]: " dns
+    dns=${dns:-tls://223.5.5.5}
+    curl -s 'https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/direct-list.txt' \
+      | sed '/regexp:/d' \
+      | sed 's/full://g' \
+      | tr "\n" "/" \
+      | sed -e 's|^|/|' -e 's|\(.*\)|[\1]'"$dns"'|' \
+      >>"$upstream_path"
+    echo >>"$upstream_path"
   done
-  read -rp "请输入境外DNS数量[默认:1]:" Num2
-  [ -z "$Num2" ] && Num2="1"
-  for ((i=1; i<=Num2; i++))
-  do
-    read -rp "请输入境外DNS$i[默认:tls://8.8.8.8]:" DNS
-    [ -z "$DNS" ] && DNS="tls://8.8.8.8"
-    echo "$DNS" >> $upstream_path
+  read -rp "请输入境外DNS数量[默认:1]: " num2
+  num2=${num2:-1}
+  for ((i = 1; i <= num2; i++)); do
+    read -rp "请输入境外DNS$i[默认:tls://8.8.8.8]: " dns
+    dns=${dns:-tls://8.8.8.8}
+    echo "$dns" >>"$upstream_path"
   done
   print_ok "分流配置文件[$upstream_path]生成完毕"
   sleep 2s
   menu
 }
+
+
 
 function service_AGH(){
   service AdGuardHome $service_option
@@ -163,7 +161,7 @@ function update_crontab(){
     do
       read -rp "请输入境内DNS$i[默认:tls://223.5.5.5]:" DNS
       [ -z "$DNS" ] && DNS="tls://223.5.5.5"
-      echo -e "curl -s 'https://endpoint.fastgit.org/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/direct-list.txt' | sed '/regexp:/d' | sed 's/full://g' | tr "\n" "/" | sed -e 's|^|/|' -e 's|\(.*\)|[\1]$DNS|' >> $upstream_path" >> /etc/update4AGH.sh
+      echo -e "curl -s 'https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/direct-list.txt' | sed '/regexp:/d' | sed 's/full://g' | tr "\n" "/" | sed -e 's|^|/|' -e 's|\(.*\)|[\1]$DNS|' >> $upstream_path" >> /etc/update4AGH.sh
     done
     read -rp "请输入境外DNS数量[默认:1]:" Num2
     [ -z "$Num2" ] && Num2="1"
