@@ -210,9 +210,9 @@ function disable_firewall(){
 menu() {
   clear
   echo -e "
-    AdGuard分流助手 安装管理脚本 ${Red}[${shell_version}]${Font}
-    ---Authored by INTEL-2333---
-    https://github.com/INTEL-2333/AGHelper/
+  AdGuard分流助手 安装管理脚本 ${Red}[${shell_version}]${Font}
+  ---Authored by INTEL-2333---
+  https://github.com/INTEL-2333/AGHelper/
 
   —————————————— 安装向导 ——————————————
   ${Green}0.${Font}  升级 脚本
@@ -253,3 +253,5 @@ menu() {
     *) echo "请输入正确数字 [0-99]" && sleep 2s && menu ;;
   esac
 }
+
+menu "$@"
