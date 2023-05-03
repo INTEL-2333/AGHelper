@@ -1,6 +1,6 @@
-# AdGuardHome-Helper
+# AGHelper
 
-AdGuardHome-Helper is a simple script to help you install and manage AdGuardHome on your Linux server.
+AGHelper is a simple script to help you install and manage AdGuardHome on your Linux server.
 
 ## Preview
 
